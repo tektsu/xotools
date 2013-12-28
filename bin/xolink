@@ -42,7 +42,7 @@ class XoLink
 		return packages_to_link
 	end
 	
-	def process_package package
+	def get_directories_in_package package
 		package_directories = []
 		package_path = "#{@options[:package_dir]}/#{package}"
 		package_dir = Dir.new package_path
@@ -51,8 +51,11 @@ class XoLink
 			next unless File.directory? "#{package_path}/#{entry}"
 			package_directories.push entry
 		end
-
-		package_directories.each do |directory|
+		return package_directories
+	end
+	
+	def process_package package
+		get_directories_in_package(package).each do |directory|
 			process_directory package, directory
 		end
 	end

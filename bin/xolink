@@ -7,10 +7,11 @@ class XoLink
       :package_dir => "/opt/xecko",
       :verbose => true,
     }
+    
+    parse_options
   end
 
   def run
-    parse_options
     get_packages_to_link.each do |package|
       process_package package
     end
@@ -35,42 +36,42 @@ class XoLink
     Dir.new(@options[:package_dir]).each do |entry|
       next if entry =~ /^\./
       next unless entry =~ /-/
-      next unless File.directory? "#{@options[:package_dir]}/#{entry}"
-      packages_to_link.push entry
+      next unless File.directory?("#{@options[:package_dir]}/#{entry}")
+      packages_to_link.push(entry)
     end
-    return packages_to_link
+    packages_to_link
   end
 
-  def get_directories_in_package package
+  def get_directories_in_package(package)
     package_directories = []
     package_path = "#{@options[:package_dir]}/#{package}"
-    package_dir = Dir.new package_path
+    package_dir = Dir.new(package_path)
     package_dir.each do |entry|
       next if entry =~ /^\./
-      next unless File.directory? "#{package_path}/#{entry}"
-      package_directories.push entry
+      next unless File.directory?("#{package_path}/#{entry}")
+      package_directories.push(entry)
     end
-    return package_directories
+    package_directories
   end
 
-  def process_package package
+  def process_package(package)
     get_directories_in_package(package).each do |directory|
-      process_directory package, directory
+      process_directory(package, directory)
     end
   end
 
-  def create_directory_if_needed directory
+  def create_directory_if_needed(directory)
     Dir.mkdir directory unless Dir.exists? directory
   end
 
-  def create_symlink_if_needed source, target
-    if File.exists? target
-      if File.symlink? target
+  def create_symlink_if_needed(source, target)
+    if File.exists?(target)
+      if File.symlink?(target)
         if File.readlink(target) == source
           return
         else
           puts "Removing incorrect link #{target}" if @options[:verbose]
-          File.unlink target
+          File.unlink(target)
         end
       else
         puts "#{target} exists and is not a symlink" if @options[:verbose]
@@ -78,28 +79,28 @@ class XoLink
       end
     end
     puts "Creating #{target} -> #{source}" if @options[:verbose]
-    File.symlink source, target
+    File.symlink(source, target)
   end
 
-  def process_directory package, path
+  def process_directory(package, path)
     source_path = "#{@options[:package_dir]}/#{package}/#{path}"
     target_path = "#{@options[:package_dir]}/#{path}"
-    create_directory_if_needed target_path
+    create_directory_if_needed(target_path)
 
     directories = []
     Dir.new(source_path).each do |entry|
       next if entry =~ /^\./
       source_full = "#{source_path}/#{entry}"
-      if File.directory? source_full
-        directories.push entry
+      if File.directory?(source_full)
+        directories.push(entry)
       else
-        create_symlink_if_needed source_full, "#{target_path}/#{entry}"
+        create_symlink_if_needed(source_full, "#{target_path}/#{entry}")
       end
     end
 
     # Process any additional directories
     directories.each do |directory|
-      process_directory package, "#{path}/#{directory}"
+      process_directory(package, "#{path}/#{directory}")
     end
   end
 

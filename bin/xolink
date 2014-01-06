@@ -79,6 +79,7 @@ class XoLink
       end
     end
     puts "Creating #{target} -> #{source}" if @options[:verbose]
+    File.unlink(target) if File.exists?(target)
     File.symlink(source, target)
   end
 

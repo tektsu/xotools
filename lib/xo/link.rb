@@ -1,4 +1,5 @@
 require 'optparse'
+require 'xo/directory/link'
 
 module Xo
   class Link
@@ -13,7 +14,7 @@ module Xo
 
     def run
       get_packages_to_link.each do |package|
-        process_package package
+        Xo::Directory::Link.new("#{@options[:package_dir]}/#{package}", "#{@options[:package_dir]}").process
       end
     end
 
@@ -42,69 +43,6 @@ module Xo
       packages_to_link
     end
 
-    def get_directories_in_package(package)
-      package_directories = []
-      package_path = "#{@options[:package_dir]}/#{package}"
-      package_dir = Dir.new(package_path)
-      package_dir.each do |entry|
-        next if entry =~ /^\./
-        next unless File.directory?("#{package_path}/#{entry}")
-        package_directories.push(entry)
-      end
-      package_directories
-    end
-
-    def process_package(package)
-      get_directories_in_package(package).each do |directory|
-        process_directory(package, directory)
-      end
-    end
-
-    def create_directory_if_needed(directory)
-      Dir.mkdir directory unless Dir.exists? directory
-    end
-
-    def create_symlink(source, target)
-      puts "Creating #{target} -> #{source}" if @options[:verbose]
-      File.unlink(target) if File.exists?(target)
-      File.symlink(source, target)
-    end
-
-    def create_symlink_if_needed(source, target)
-      if File.exists?(target)
-        if File.symlink?(target)
-          if File.readlink(target) == source
-            return
-          end
-        else
-          puts "#{target} exists and is not a symlink" if @options[:verbose]
-          return
-        end
-      end
-      create_symlink(source, target)
-    end
-
-    def process_directory(package, path)
-      source_path = "#{@options[:package_dir]}/#{package}/#{path}"
-      target_path = "#{@options[:package_dir]}/#{path}"
-      create_directory_if_needed(target_path)
-
-      directories = []
-      Dir.new(source_path).each do |entry|
-        next if entry =~ /^\./
-        source_full = "#{source_path}/#{entry}"
-        if File.directory?(source_full)
-          directories.push(entry)
-        else
-          create_symlink_if_needed(source_full, "#{target_path}/#{entry}")
-        end
-      end
-
-      # Process any additional directories
-      directories.each do |directory|
-        process_directory(package, "#{path}/#{directory}")
-      end
-    end
   end
 
 end

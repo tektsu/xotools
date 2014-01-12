@@ -50,5 +50,10 @@ describe Xo::Directory::Link do
       linker.process
       test_target_directory
     end
+    
+    it "preserves existing files in the target directory"
+    it "preserves existing directories in the target directory"
+    it "ignores source files that are links to nonexistent files"
+    it "throws an exception when a file is in the way of a link"
   end
 end

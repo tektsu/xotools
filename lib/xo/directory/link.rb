@@ -79,8 +79,9 @@ module Xo
               return
             end
           else
-            raise if @raise
-            puts "#{target} exists and is not a symlink" if @verbose
+            message = "#{target} exists and is not a symlink"
+            puts message if @verbose
+            raise message if @raise
             return
           end
         end

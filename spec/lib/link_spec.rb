@@ -20,8 +20,8 @@ describe Xo::Directory::Link do
   describe 'initialize' do
     it 'sets the source and target directories' do
       linker = Xo::Directory::Link.new(@src, @tgt)
-      linker.source.should == @src
-      linker.target.should == @tgt
+      expect(linker.source).to eq(@src)
+      expect(linker.target).to eq(@tgt)
     end
   end
 end

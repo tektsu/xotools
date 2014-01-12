@@ -7,6 +7,7 @@ module Xo
         @source = source
         @target = target
         @verbose = false
+        @raise = false
       end
       
       def verbose(state=true)
@@ -19,6 +20,18 @@ module Xo
       
       def verbose?
         @verbose
+      end
+      
+      def raise(state=true)
+        if state
+          @raise = true
+        else
+          @raise = false
+        end
+      end
+      
+      def raise?
+        @raise
       end
       
       def process(path=nil)
@@ -66,6 +79,7 @@ module Xo
               return
             end
           else
+            raise if @raise
             puts "#{target} exists and is not a symlink" if @verbose
             return
           end

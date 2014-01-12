@@ -78,7 +78,15 @@ describe Xo::Directory::Link do
       expect(Dir).to exist(extra_dir)
     end
 
-    it "ignores source files that are links to nonexistent files"
-    it "throws an exception when a file is in the way of a link"
+    it "ignores source files that are links to nonexistent files" do
+      invalid_name = '__invalid__'
+      invalid_link = "#{@src}/#{invalid_name}"
+      nonexistent_file = "#{@src}/not_really_here"
+      FileUtils.touch(nonexistent_file)
+      FileUtils.symlink(nonexistent_file, invalid_link)
+      FileUtils.rm(nonexistent_file)
+      @linker.process
+      expect(File).to_not exist("#{@tgt}/#{invalid_name}")
+    end
   end
 end

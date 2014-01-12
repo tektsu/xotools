@@ -24,4 +24,32 @@ describe Xo::Directory::Link do
       expect(linker.target).to eq(@tgt)
     end
   end
+  
+  describe 'process' do
+    it 'sets an empty target to match the source' do
+      dirs = []
+      dirs.push("dir1")
+      dirs.push("dir1/dir1a")
+      dirs.push("dir2")
+      dirs.each do |dir|
+        FileUtils.mkdir_p("#{@src}/#{dir}")
+      end
+      files = []
+      files.push("#{dirs[0]}/file1")
+      files.push("#{dirs[0]}/file2")
+      files.push("#{dirs[1]}/file3")
+      files.each do |file|
+        FileUtils.touch("#{@src}/#{file}")
+      end
+      linker = Xo::Directory::Link.new(@src, @tgt)
+      linker.process
+      files.each do |file|
+        expect(File).to exist("#{@src}/#{file}")
+      end
+      dirs.each do |dir|
+        expect(Dir).to exist("#{@src}/#{dir}")
+      end
+    end
+    it 'sets a partially populated target to match the source'
+  end
 end

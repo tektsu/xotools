@@ -38,7 +38,6 @@ describe Xo::Directory::Link do
       create_filesystem
       populate_source_directory
       @linker = Xo::Directory::Link.new(@src, @tgt)
-      @linker.process
     end
     
     after :each do
@@ -46,23 +45,28 @@ describe Xo::Directory::Link do
     end
 
     it 'sets an empty target to match the source' do
+      @linker.process
       test_target_directory
     end
     
     it 'sets a partially populated target to match the source' do
+      @linker.process
       FileUtils.rm_rf("#{@tgt}/#{@dirs[1]}")
       @linker.process
       test_target_directory
     end
     
     it "fixes an incorrect link" do
+      @linker.process
       FileUtils.rm_rf("#{@tgt}/#{@files[0]}")
       FileUtils.symlink("#{@src}/#{@files[1]}", "#{@tgt}/#{@files[0]}")
       @linker.process
       test_target_directory
     end
     
-    it "preserves existing files in the target directory"
+    it "preserves existing files in the target directory" do
+      test_target_directory
+    end
     it "preserves existing directories in the target directory"
     it "ignores source files that are links to nonexistent files"
     it "throws an exception when a file is in the way of a link"

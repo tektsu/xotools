@@ -88,5 +88,20 @@ describe Xo::Directory::Link do
       @linker.process
       expect(File).to_not exist("#{@tgt}/#{invalid_name}")
     end
+
+    it "throws an exception when a file is in the way of a link" do
+      @linker.process
+      FileUtils.rm("#{@tgt}/#{@files[0]}")
+      FileUtils.touch("#{@tgt}/#{@files[0]}")
+      @linker.raise
+      expect{@linker.process}.to raise_error
+    end
+    
+    it "does not throw an exception when the raise flag is not set" do
+      @linker.process
+      FileUtils.rm("#{@tgt}/#{@files[0]}")
+      FileUtils.touch("#{@tgt}/#{@files[0]}")
+      expect{@linker.process}.to_not raise_error
+    end
   end
 end

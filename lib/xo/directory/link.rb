@@ -6,8 +6,21 @@ module Xo
       def initialize(source, target)
         @source = source
         @target = target
+        @verbose = false
       end
-
+      
+      def verbose(state=true)
+        if state
+          @verbose = true
+        else
+          @verbose = false
+        end
+      end
+      
+      def verbose?
+        @verbose
+      end
+      
       def process(path=nil)
         source_path = @source.dup
         target_path = @target.dup
@@ -41,7 +54,7 @@ module Xo
       end
 
       def create_symlink(source, target)
-        puts "Creating #{target} -> #{source}"
+        puts "Creating #{target} -> #{source}" if @verbose
         File.unlink(target) if File.exists?(target)
         File.symlink(source, target)
       end
@@ -53,7 +66,7 @@ module Xo
               return
             end
           else
-            puts "#{target} exists and is not a symlink"
+            puts "#{target} exists and is not a symlink" if @verbose
             return
           end
         end

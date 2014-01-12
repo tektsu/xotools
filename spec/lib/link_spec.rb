@@ -7,25 +7,40 @@ RSpec.configure do |c|
 end
 
 describe Xo::Directory::Link do
-  before :each do
-    create_filesystem
-  end
-
-  after :each do
-    remove_filesystem
-  end
 
   describe 'initialize' do
     it 'sets the source and target directories' do
-      linker = Xo::Directory::Link.new(@src, @tgt)
-      expect(linker.source).to eq(@src)
-      expect(linker.target).to eq(@tgt)
+      linker = Xo::Directory::Link.new('foo', 'bar')
+      expect(linker.source).to eq('foo')
+      expect(linker.target).to eq('bar')
+    end
+    
+    it "is not verbose" do
+      linker = Xo::Directory::Link.new("foo", "bar")
+      expect(linker.verbose?).to be(false)
+    end
+    
+    it "is verbose when verbose has been set" do
+      linker = Xo::Directory::Link.new("foo", "bar")
+      linker.verbose(true)
+      expect(linker.verbose?).to be(true)
+    end
+    
+    it "is verbose when verbose has been set implcitly" do
+      linker = Xo::Directory::Link.new("foo", "bar")
+      linker.verbose
+      expect(linker.verbose?).to be(true)
     end
   end
   
   describe 'process' do
     before :each do
+      create_filesystem
       populate_source_directory
+    end
+    
+    after :each do
+      remove_filesystem
     end
 
     it 'sets an empty target to match the source' do

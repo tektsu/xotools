@@ -41,5 +41,14 @@ describe Xo::Directory::Link do
       linker.process
       test_target_directory
     end
+    
+    it "fixes an incorrect link" do
+      linker = Xo::Directory::Link.new(@src, @tgt)
+      linker.process
+      FileUtils.rm_rf("#{@tgt}/#{@files[0]}")
+      FileUtils.symlink("#{@src}/#{@files[1]}", "#{@tgt}/#{@files[0]}")
+      linker.process
+      test_target_directory
+    end
   end
 end

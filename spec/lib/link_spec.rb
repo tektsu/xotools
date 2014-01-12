@@ -14,32 +14,32 @@ describe Xo::Directory::Link do
       expect(linker.source).to eq('foo')
       expect(linker.target).to eq('bar')
     end
-    
+
     it "is not verbose" do
       linker = Xo::Directory::Link.new("foo", "bar")
       expect(linker.verbose?).to be(false)
     end
-    
+
     it "is verbose when verbose has been set" do
       linker = Xo::Directory::Link.new("foo", "bar")
       linker.verbose(true)
       expect(linker.verbose?).to be(true)
     end
-    
+
     it "is verbose when verbose has been set implcitly" do
       linker = Xo::Directory::Link.new("foo", "bar")
       linker.verbose
       expect(linker.verbose?).to be(true)
     end
   end
-  
+
   describe 'process' do
     before :each do
       create_filesystem
       populate_source_directory
       @linker = Xo::Directory::Link.new(@src, @tgt)
     end
-    
+
     after :each do
       remove_filesystem
     end
@@ -48,14 +48,14 @@ describe Xo::Directory::Link do
       @linker.process
       test_target_directory
     end
-    
+
     it 'sets a partially populated target to match the source' do
       @linker.process
       FileUtils.rm_rf("#{@tgt}/#{@dirs[1]}")
       @linker.process
       test_target_directory
     end
-    
+
     it "fixes an incorrect link" do
       @linker.process
       FileUtils.rm_rf("#{@tgt}/#{@files[0]}")
@@ -63,11 +63,21 @@ describe Xo::Directory::Link do
       @linker.process
       test_target_directory
     end
-    
+
     it "preserves existing files in the target directory" do
-      test_target_directory
+      extra_file = "#{@tgt}/__extra_file__"
+      FileUtils.touch(extra_file)
+      @linker.process
+      expect(File).to exist(extra_file)
     end
-    it "preserves existing directories in the target directory"
+
+    it "preserves existing directories in the target directory" do
+      extra_dir = "#{@tgt}/__extra_dir__"
+      FileUtils.mkdir_p(extra_dir)
+      @linker.process
+      expect(Dir).to exist(extra_dir)
+    end
+
     it "ignores source files that are links to nonexistent files"
     it "throws an exception when a file is in the way of a link"
   end

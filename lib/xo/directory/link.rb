@@ -22,7 +22,7 @@ module Xo
         @verbose
       end
       
-      def raise(state=true)
+      def raise_on_error(state=true)
         if state
           @raise = true
         else
@@ -30,7 +30,7 @@ module Xo
         end
       end
       
-      def raise?
+      def raise_on_error?
         @raise
       end
       

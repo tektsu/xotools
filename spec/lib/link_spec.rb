@@ -93,7 +93,7 @@ describe Xo::Directory::Link do
       @linker.process
       FileUtils.rm("#{@tgt}/#{@files[0]}")
       FileUtils.touch("#{@tgt}/#{@files[0]}")
-      @linker.raise
+      @linker.raise_on_error
       expect{@linker.process}.to raise_error
     end
     

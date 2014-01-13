@@ -14,7 +14,9 @@ module Xo
 
     def run
       get_packages_to_link.each do |package|
-        Xo::Directory::Link.new("#{@options[:package_dir]}/#{package}", "#{@options[:package_dir]}").process
+        linker = Xo::Directory::Link.new("#{@options[:package_dir]}/#{package}", "#{@options[:package_dir]}")
+        linker.verbose(@options[:verbose])
+        linker.process
       end
     end
 

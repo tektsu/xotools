@@ -45,12 +45,7 @@ module Xo
       end
       
       def process(path=nil)
-        source_path = @source.dup
-        target_path = @target.dup
-        if path
-          source_path << "/#{path}"
-          target_path << "/#{path}"
-        end
+        source_path, target_path = get_full_paths(path)
         create_directory_if_needed(target_path)
 
         # Create a symlink for each file and a list of any directories

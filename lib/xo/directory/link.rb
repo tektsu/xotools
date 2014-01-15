@@ -34,6 +34,16 @@ module Xo
         @raise
       end
       
+      def get_full_paths(path)
+        source = @source.dup
+        target = @target.dup
+        if path
+          source << "/#{path}"
+          target << "/#{path}"
+        end
+        return [source, target]
+      end
+      
       def process(path=nil)
         source_path = @source.dup
         target_path = @target.dup

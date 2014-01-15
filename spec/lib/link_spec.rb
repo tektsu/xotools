@@ -40,8 +40,6 @@ describe Xo::Directory::Link do
       relative_path = 'baz/boo'
       linker = Xo::Directory::Link.new(source_path, target_path)
       source, target = linker.get_full_paths(relative_path)
-      puts source
-      puts target
       expect(source).to eq("#{source_path}/#{relative_path}")
       expect(target).to eq("#{target_path}/#{relative_path}")
     end

@@ -39,11 +39,12 @@ module Xo
       # @param source [String] the full path to the directory containing files to symlink to
       # @param target [String] the full path to the directory in which to create the symlinks
       # @param verbose [Boolean] print extra output, true or false
-      def initialize(source, target, verbose: false)
+      # @param raise_on_error [Boolean] throw an exception on an error, true or false
+      def initialize(source, target, verbose: false, raise_on_error: false)
         @source = source
         @target = target
         @verbose = verbose
-        @raise = false
+        @raise = raise_on_error
       end
 
       # Set or clear the verbose flag

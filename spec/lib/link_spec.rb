@@ -36,6 +36,28 @@ describe Xo::Directory::Link do
       linker = Xo::Directory::Link.new("foo", "bar", verbose: true)
       expect(linker.verbose?).to be(true)
     end
+
+    it "raise_on_error is off" do
+      linker = Xo::Directory::Link.new("foo", "bar")
+      expect(linker.raise_on_error?).to be(false)
+    end
+
+    it "raise_on_error is on when raise_on_error has been set" do
+      linker = Xo::Directory::Link.new("foo", "bar")
+      linker.raise_on_error(true)
+      expect(linker.raise_on_error?).to be(true)
+    end
+
+    it "raise_on_error is on when raise_on_error has been set implicitly" do
+      linker = Xo::Directory::Link.new("foo", "bar")
+      linker.raise_on_error
+      expect(linker.raise_on_error?).to be(true)
+    end
+
+    it "raise_on_error is on when raise_on_error has been set through the constructor" do
+      linker = Xo::Directory::Link.new("foo", "bar", raise_on_error: true)
+      expect(linker.raise_on_error?).to be(true)
+    end
   end
   
   describe 'get_full_paths' do

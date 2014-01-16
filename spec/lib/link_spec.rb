@@ -26,9 +26,14 @@ describe Xo::Directory::Link do
       expect(linker.verbose?).to be(true)
     end
 
-    it "is verbose when verbose has been set implcitly" do
+    it "is verbose when verbose has been set implicitly" do
       linker = Xo::Directory::Link.new("foo", "bar")
       linker.verbose
+      expect(linker.verbose?).to be(true)
+    end
+
+    it "is verbose when verbose has been set through the constructor" do
+      linker = Xo::Directory::Link.new("foo", "bar", verbose: true)
       expect(linker.verbose?).to be(true)
     end
   end

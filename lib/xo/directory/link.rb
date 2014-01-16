@@ -38,10 +38,11 @@ module Xo
       
       # @param source [String] the full path to the directory containing files to symlink to
       # @param target [String] the full path to the directory in which to create the symlinks
-      def initialize(source, target)
+      # @param verbose [Boolean] print extra output, true or false
+      def initialize(source, target, verbose: false)
         @source = source
         @target = target
-        @verbose = false
+        @verbose = verbose
         @raise = false
       end
 

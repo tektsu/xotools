@@ -57,6 +57,8 @@ module Xo
           process("#{this_level}#{directory}")
         end
       end
+      
+      private
 
       def create_directory_if_needed(directory)
         Dir.mkdir directory unless Dir.exists? directory

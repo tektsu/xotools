@@ -10,11 +10,7 @@ module Xo
       end
 
       def verbose(state=true)
-        if state
-          @verbose = true
-        else
-          @verbose = false
-        end
+        @verbose = state ? true : false
       end
 
       def verbose?
@@ -22,11 +18,7 @@ module Xo
       end
 
       def raise_on_error(state=true)
-        if state
-          @raise = true
-        else
-          @raise = false
-        end
+        @raise = state ? true : false
       end
 
       def raise_on_error?

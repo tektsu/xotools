@@ -21,6 +21,8 @@ module Xo
       end
       
       # Get the value of the verbose flag
+      #
+      # @return [Boolean]
       def verbose?
         @verbose
       end

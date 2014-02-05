@@ -27,10 +27,10 @@ describe Xo::Directory::Walk do
     
     it 'processes all files and directories' do
       found = []
-      cb = lambda {|path| found.push(File.basename(path))}
+      cb = lambda {|path| found.push(path)}
       Xo::Directory::Walk.new(@src, dir_cb: cb, file_cb: cb).process
-      @files.each {|file| expect(found).to include(File.basename(file))}
-      @dirs.each {|dir| expect(found).to include(File.basename(dir))}
+      @files.each {|file| expect(found).to include(file)}
+      @dirs.each {|dir| expect(found).to include(dir)}
     end
   end
 end

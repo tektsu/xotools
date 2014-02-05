@@ -19,14 +19,14 @@ module Xo
       #
       # @param path [String] the relative path to process
       # @return [void]
-      def process(path=@directory)
-        
+      def process(path=nil)
         directories = []
         files = []
-        Dir.new(path).each do |entry|
+        full_path = @directory + (path ? "/#{path}" : '')
+        Dir.new(full_path).each do |entry|
           next if entry == '.' || entry == '..'
           next if entry =~ /^\./ && @ignore_hidden
-          full_entry = "#{path}/#{entry}"
+          full_entry = "#{full_path}/#{entry}"
           if File.directory?(full_entry)
             directories.push(entry)
           else
@@ -40,9 +40,14 @@ module Xo
       
       private
       
+      def normalize_path(path)
+        path ? "#{path}/": ''
+      end
+      
       def process_directories(path, directories)
+        normalized_path = normalize_path(path)
         directories.each do |directory|
-          full_path = "#{path}/#{directory}"
+          full_path = "#{normalized_path}#{directory}"
           if @dir_cb
             result = @dir_cb.call(full_path)
             next if result == :prune
@@ -52,8 +57,9 @@ module Xo
       end
 
       def process_files(path, files)
+        normalized_path = normalize_path(path)
         files.each do |file|
-          @file_cb.call("#{path}/#{file}") if @file_cb
+          @file_cb.call("#{normalized_path}#{file}") if @file_cb
         end
       end
       

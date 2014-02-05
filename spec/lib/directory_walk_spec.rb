@@ -32,5 +32,12 @@ describe Xo::Directory::Walk do
       @files.each {|file| expect(found).to include(file)}
       @dirs.each {|dir| expect(found).to include(dir)}
     end
+    
+    it 'processes all files when there is a top-level file' do
+      found = []
+      cb = lambda {|path| found.push(path)}
+      Xo::Directory::Walk.new(@src, dir_cb: cb, file_cb: cb).process
+      @files.each {|file| expect(found).to include(file)}
+    end
   end
 end

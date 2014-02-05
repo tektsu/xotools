@@ -13,6 +13,13 @@ module FileSystemHelper
     Dir.chdir(@pwd)
     FileUtils.rm_rf(@tmp)
   end
+  
+  # Create the files in @files
+  def _create_files
+    @files.each do |file|
+      FileUtils.touch("#{@src}/#{file}")
+    end
+  end
 
   # Set up a sample directory structure
   def populate_source_directory
@@ -27,9 +34,15 @@ module FileSystemHelper
     @files.push("#{@dirs[0]}/file1")
     @files.push("#{@dirs[0]}/file2")
     @files.push("#{@dirs[1]}/file3")
-    @files.each do |file|
-      FileUtils.touch("#{@src}/#{file}")
-    end
+    _create_files
+  end
+
+  # Set up a sample directory structure with a top-level file  
+  def populate_source_directory_wth_top_level_files
+    populate_souce_directory
+    file = "file4"
+    @files.push(file)
+    _create_files
   end
 
   # Make sure the target directory structure matches the one set up by populate_source_directory

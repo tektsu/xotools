@@ -15,34 +15,41 @@ module FileSystemHelper
   end
   
   # Create the files in @files
-  def _create_files
+  def _create_directories_and_files
+    @dirs.each do |dir|
+      FileUtils.mkdir_p("#{@src}/#{dir}")
+    end
     @files.each do |file|
       FileUtils.touch("#{@src}/#{file}")
     end
   end
-
-  # Set up a sample directory structure
-  def populate_source_directory
+  
+  # Define a set of files and directories to create
+  def _define_basic_files_and_directories
     @dirs = []
     @dirs.push("dir1")
     @dirs.push("dir1/dir1a")
     @dirs.push("dir2")
-    @dirs.each do |dir|
-      FileUtils.mkdir_p("#{@src}/#{dir}")
-    end
     @files = []
     @files.push("#{@dirs[0]}/file1")
     @files.push("#{@dirs[0]}/file2")
     @files.push("#{@dirs[1]}/file3")
-    _create_files
   end
 
-  # Set up a sample directory structure with a top-level file  
-  def populate_source_directory_wth_top_level_files
-    populate_souce_directory
-    file = "file4"
-    @files.push(file)
-    _create_files
+  # Set up a sample directory structure
+  def populate_source_directory
+    _define_basic_files_and_directories
+    _create_directories_and_files
+  end
+
+  # Set up a sample directory structure with hidden files
+  def populate_source_directory_with_hidden_files
+    _define_basic_files_and_directories
+    @hidden_dirs = [".dir3"]
+    @hidden_dirs.each {|dir| @dirs.push(dir)}
+    @hidden_files = ['.file4', "#{@dirs[1]}/.file5", "#{@dirs[3]}/file6"]
+    @hidden_files.each {|file| @files.push(file)}
+    _create_directories_and_files
   end
 
   # Make sure the target directory structure matches the one set up by populate_source_directory

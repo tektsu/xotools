@@ -1,3 +1,5 @@
+require 'xo/directory/walk'
+
 module Xo
   module Directory
     
@@ -73,85 +75,40 @@ module Xo
         @raise
       end
 
-      # Return full source and target paths
+      # Process the directories recursively.
       #
-      # @param path [String] a relative path
-      # @return [Array<String, String>] source and target full paths
-      def get_full_paths(path)
-        source = @source.dup
-        target = @target.dup
-        if path
-          source << "/#{path}"
-          target << "/#{path}"
-        end
-        return [source, target]
-      end
-
-      # Process the directories recursively. Normally called initially with no parameter.
-      #
-      # @param path [String] the relative path to process
       # @return [void]
-      def process(path=nil)
-        source_path, target_path = get_full_paths(path)
-        create_directory_if_needed(target_path)
-        this_level = path ? "#{path}/" : ''
-
-        # Create a symlink for each file and a list of any directories
-        directories = []
-        Dir.new(source_path).each do |entry|
-          next if entry =~ /^\./
-          source_full = "#{source_path}/#{entry}"
-          if File.directory?(source_full)
-            directories.push(entry)
-          else
-            create_symlink_if_needed("#{this_level}#{entry}")
-          end
+      def process
+        Dir.mkdir @target unless Dir.exists? @target
+        
+        # When we find a directory, create it in the target area
+        create_directory = lambda do |path|
+          directory = "#{@target}/#{path}"
+          Dir.mkdir directory unless Dir.exists? directory
         end
-
-        # Process any additional directories
-        directories.each do |directory|
-          process("#{this_level}#{directory}")
-        end
-      end
-      
-      private
-
-      # Create a directory if it does not already exist
-      #
-      # @param directory [String] the full path to a directory to create
-      def create_directory_if_needed(directory)
-        Dir.mkdir directory unless Dir.exists? directory
-      end
-
-      # Create a symlink from a path in the target directory to the same path in the source directory
-      #
-      # @param path [String] a relative path inside the target and source directories
-      def create_symlink(path)
-        source_path, target_path = get_full_paths(path)
-        puts "Creating #{target_path} -> #{source_path}" if @verbose
-        File.unlink(target_path) if File.exists?(target_path)
-        File.symlink(source_path, target_path)
-      end
-
-      # Create a symlink from a path in the target directory to the same path in the source directory
-      # if it does not already exist or points to the wrong source file.
-      #
-      # @param path [String] a relative path inside the target and source directories
-      def create_symlink_if_needed(path)
-        source_path, target_path = get_full_paths(path)
-        if File.exists?(target_path)
-          if File.symlink?(target_path)
-            if File.readlink(target_path) == source_path
+        
+        # When we find a file, symlink it in the target area
+        create_symlink = lambda do |path|
+          source = "#{@source}/#{path}"
+          target = "#{@target}/#{path}"
+          if File.exists?(target)
+            if File.symlink?(target)
+              if File.readlink(target) == source
+                return
+              end
+            else
+              message = "#{target} exists and is not a symlink"
+              puts message if @verbose
+              raise message if @raise
               return
             end
-          else
-            message = "#{target_path} exists and is not a symlink"
-            puts message if @verbose
-            raise message if @raise
-            return
           end
+          puts "Creating #{target} -> #{source}" if @verbose
+          File.unlink(target) if File.exists?(target)
+          File.symlink(source, target)
         end
-        create_symlink(path)
+        
+        Xo::Directory::Walk.new(@source, dir_cb: create_directory, file_cb: create_symlink).process
       end
 
     end

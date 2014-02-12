@@ -60,18 +60,6 @@ describe Xo::Directory::Link do
     end
   end
   
-  describe 'get_full_paths' do
-    it 'returns correct source and target' do
-      source_path = 'foo'
-      target_path = 'bar'
-      relative_path = 'baz/boo'
-      linker = Xo::Directory::Link.new(source_path, target_path)
-      source, target = linker.get_full_paths(relative_path)
-      expect(source).to eq("#{source_path}/#{relative_path}")
-      expect(target).to eq("#{target_path}/#{relative_path}")
-    end
-  end
-
   describe 'process' do
     before :each do
       create_filesystem

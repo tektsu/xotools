@@ -75,10 +75,10 @@ module Xo
         @raise
       end
 
-      # Process the directories recursively.
+      # Perform the linking from source to target
       #
       # @return [void]
-      def process
+      def link
         Dir.mkdir @target unless Dir.exists? @target
         
         # When we find a directory, create it in the target area

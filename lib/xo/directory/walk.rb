@@ -3,6 +3,8 @@ module Xo
     
     class Walk
       
+      # Get the directory this instance will walk
+      #
       # @return [String]
       attr_reader :directory
 

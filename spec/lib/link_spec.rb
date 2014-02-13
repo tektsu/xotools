@@ -60,7 +60,7 @@ describe Xo::Directory::Link do
     end
   end
   
-  describe 'process' do
+  describe 'link' do
     before :each do
       create_filesystem
       populate_source_directory
@@ -72,36 +72,36 @@ describe Xo::Directory::Link do
     end
 
     it 'sets an empty target to match the source' do
-      @linker.process
+      @linker.link
       test_target_directory
     end
 
     it 'sets a partially populated target to match the source' do
-      @linker.process
+      @linker.link
       FileUtils.rm_rf("#{@tgt}/#{@dirs[1]}")
-      @linker.process
+      @linker.link
       test_target_directory
     end
 
     it "fixes an incorrect link" do
-      @linker.process
+      @linker.link
       FileUtils.rm_rf("#{@tgt}/#{@files[0]}")
       FileUtils.symlink("#{@src}/#{@files[1]}", "#{@tgt}/#{@files[0]}")
-      @linker.process
+      @linker.link
       test_target_directory
     end
 
     it "preserves existing files in the target directory" do
       extra_file = "#{@tgt}/__extra_file__"
       FileUtils.touch(extra_file)
-      @linker.process
+      @linker.link
       expect(File).to exist(extra_file)
     end
 
     it "preserves existing directories in the target directory" do
       extra_dir = "#{@tgt}/__extra_dir__"
       FileUtils.mkdir_p(extra_dir)
-      @linker.process
+      @linker.link
       expect(Dir).to exist(extra_dir)
     end
 
@@ -112,23 +112,23 @@ describe Xo::Directory::Link do
       FileUtils.touch(nonexistent_file)
       FileUtils.symlink(nonexistent_file, invalid_link)
       FileUtils.rm(nonexistent_file)
-      @linker.process
+      @linker.link
       expect(File).to_not exist("#{@tgt}/#{invalid_name}")
     end
 
     it "throws an exception when a file is in the way of a link" do
-      @linker.process
+      @linker.link
       FileUtils.rm("#{@tgt}/#{@files[0]}")
       FileUtils.touch("#{@tgt}/#{@files[0]}")
       @linker.raise_on_error
-      expect{@linker.process}.to raise_error
+      expect{@linker.link}.to raise_error
     end
     
     it "does not throw an exception when the raise flag is not set" do
-      @linker.process
+      @linker.link
       FileUtils.rm("#{@tgt}/#{@files[0]}")
       FileUtils.touch("#{@tgt}/#{@files[0]}")
-      expect{@linker.process}.to_not raise_error
+      expect{@linker.link}.to_not raise_error
     end
   end
 end

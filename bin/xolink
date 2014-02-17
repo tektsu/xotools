@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
 $: << File.expand_path("../../lib/", __FILE__)
-require 'xo/link'
+require 'xo/apps/link'
 
 Xo::Link.new.run

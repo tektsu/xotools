@@ -13,3 +13,10 @@ end
 task :gem do
   `gem build xotools.gemspec`
 end
+
+task :clean do
+  FileUtils.rm_rf('doc')
+  FileUtils.rm_rf('.yardoc')
+  FileUtils.rm_rf('_yardoc')
+  FileUtils.rm_rf(Dir.glob('*.gem'))
+end

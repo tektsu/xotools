@@ -3,4 +3,4 @@
 $: << File.expand_path("../../lib/", __FILE__)
 require 'xo/apps/link'
 
-Xo::Link.new.run
+Xo::Apps::Link.new.run

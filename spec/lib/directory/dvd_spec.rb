@@ -31,6 +31,7 @@ describe Xo::Directory::Dvd do
     
     before :each do
       @source = 'sourcedir'
+      @file = "#{@source}/file"
       @dvd = Xo::Directory::Dvd.new(@target)
       FileUtils.mkpath(@source)
     end
@@ -40,42 +41,37 @@ describe Xo::Directory::Dvd do
     end
 
     it 'adds a file small enough to fit' do
-      file = "#{@source}/file1"
-      File.open(file, 'wb') { |fd| fd.truncate(10000) }
-      @dvd.add(file)
+      File.open(@file, 'wb') { |fd| fd.truncate(10000) }
+      @dvd.add(@file)
       expect(@dvd.current_size).to eq(10000)
     end
     
     it 'copies an added file into the dvd directory' do
-      file = "#{@source}/file1"
-      File.open(file, 'wb') { |fd| fd.truncate(10000) }
-      @dvd.add(file)
-      expect(File).to exist("#{@dvd.path}/#{File.basename(file)}")
+      File.open(@file, 'wb') { |fd| fd.truncate(10000) }
+      @dvd.add(@file)
+      expect(File).to exist("#{@dvd.path}/#{File.basename(@file)}")
     end
     
     it 'rejects a file too large to fit' do
-      file = "#{@source}/file1"
-      File.open(file, 'wb') { |fd| fd.truncate(@dvd.max_size + 1) }
-      expect{ @dvd.add(file) }.to raise_error
+      File.open(@file, 'wb') { |fd| fd.truncate(@dvd.max_size + 1) }
+      expect{ @dvd.add(@file) }.to raise_error
     end
     
     it 'adds a directory small enough to fit' do
-      file = "#{@source}/file1"
-      File.open(file, 'wb') { |fd| fd.truncate(10000) }
+      File.open(@file, 'wb') { |fd| fd.truncate(10000) }
       @dvd.add(@source)
       expect(@dvd.current_size).to be >= 1000
     end
     
     it 'copies an added directory into the dvd directory' do
-      file = "#{@source}/file1"
-      File.open(file, 'wb') { |fd| fd.truncate(10000) }
+      File.open(@file, 'wb') { |fd| fd.truncate(10000) }
       @dvd.add(@source)
       expect(Dir).to exist("#{@dvd.path}/#{File.basename(@source)}")
     end
     
     it 'rejects a directory too large to fit' do
       5.times do |x|
-        File.open("#{@source}/file#{x}", 'wb') { |fd| fd.truncate(1024 * 1024 * 1024) }
+        File.open("#{@file}#{x}", 'wb') { |fd| fd.truncate(1024 * 1024 * 1024) }
       end
       expect{ @dvd.add(source) }.to raise_error
     end

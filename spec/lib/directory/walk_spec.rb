@@ -49,5 +49,12 @@ describe Xo::Directory::Walk do
       @hidden_files.each {|file| expect(found).to_not include(file)}
       @hidden_dirs.each {|dir| expect(found).to_not include(dir)}
     end
+    
+    it 'processes files and directories separately' do
+      populate_source_directory
+      dir_cb = lambda {|path| expect(File.directory?("#{@src}/#{path}")).to be(true) }
+      file_cb = lambda {|path| expect(File.directory?("#{@src}/#{path}")).to be(false) }
+      Xo::Directory::Walk.new(@src, ignore_hidden: true, dir_cb: dir_cb, file_cb: file_cb).process
+    end
   end
 end

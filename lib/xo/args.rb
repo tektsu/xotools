@@ -26,11 +26,21 @@ module Xo
       }
     end
     
+    # Initialize the argument list. Any arguments are added to existing
+    # arguments and may overwrite them. This may be safely called more
+    # than once.
+    # 
+    # @param args [Hash] a hash of initial arguments and values
+    # @return [Xo::Args] the object instance
     def set(args)
       args.each {|key, value| @args[key] = value}
       self
     end
     
+    # Set an argument value
+    #
+    # @param key the argument name
+    # @param value the argument value
     def []=(key, value)
       @args[key] = value;
       if @args[key]
@@ -51,6 +61,10 @@ module Xo
       end
     end
     
+    # Get the value of an argument
+    #
+    # @param key the argument name
+    # @return the argument vallue
     def [](key)
       @args[key]
     end

@@ -1,4 +1,5 @@
 require 'xo/directory/walk'
+require 'xo/args'
 
 module Xo
   module Directory
@@ -40,26 +41,12 @@ module Xo
       
       # @param source [String] the full path to the directory containing files to symlink to
       # @param target [String] the full path to the directory in which to create the symlinks
-      # @param verbose [Boolean] print extra output, true or false
       # @param raise_on_error [Boolean] throw an exception on an error, true or false
-      def initialize(source, target, verbose: false, raise_on_error: false)
+      def initialize(source, target, raise_on_error: false)
+        @args = Xo::Args.instance
         @source = source
         @target = target
-        @verbose = verbose
         @raise = raise_on_error
-      end
-
-      # Set or clear the verbose flag
-      #
-      # @param state [Boolean] the new state, true or false
-      # @return [void]
-      def verbose(state=true)
-        @verbose = state ? true : false
-      end
-      
-      # Get the value of the verbose flag
-      def verbose?
-        @verbose
       end
 
       # Set or clear the raise_on_error flag. If set, errors will throw an exception, otherwise they are ignored.
@@ -98,12 +85,12 @@ module Xo
               end
             else
               message = "#{target} exists and is not a symlink"
-              puts message if @verbose
+              puts message if @args[:verbose]
               raise message if @raise
               return
             end
           end
-          puts "Creating #{target} -> #{source}" if @verbose
+          puts "Creating #{target} -> #{source}" if @args[:verbose]
           File.unlink(target) if File.exists?(target)
           File.symlink(source, target)
         end

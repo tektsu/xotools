@@ -15,28 +15,6 @@ describe Xo::Directory::Link do
       expect(linker.target).to eq('bar')
     end
 
-    it "is not verbose" do
-      linker = Xo::Directory::Link.new("foo", "bar")
-      expect(linker.verbose?).to be(false)
-    end
-
-    it "is verbose when verbose has been set" do
-      linker = Xo::Directory::Link.new("foo", "bar")
-      linker.verbose(true)
-      expect(linker.verbose?).to be(true)
-    end
-
-    it "is verbose when verbose has been set implicitly" do
-      linker = Xo::Directory::Link.new("foo", "bar")
-      linker.verbose
-      expect(linker.verbose?).to be(true)
-    end
-
-    it "is verbose when verbose has been set through the constructor" do
-      linker = Xo::Directory::Link.new("foo", "bar", verbose: true)
-      expect(linker.verbose?).to be(true)
-    end
-
     it "raise_on_error is off" do
       linker = Xo::Directory::Link.new("foo", "bar")
       expect(linker.raise_on_error?).to be(false)

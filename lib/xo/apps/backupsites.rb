@@ -2,25 +2,21 @@
 require 'fileutils'
 require 'optparse'
 require 'yaml'
+require 'xo/args'
 
 module Xo
 	module Apps
 		class BackupSites
 			def initialize
-        @options = {
-          :verbose => false,
-          :config_file => '~/.backup_sites.yml',
-        }
         parse_options
-        
 				@config = get_config
-				@options[:backup_dir] = File.expand_path(@config['backup_directory'])
+				@args[:backup_dir] = File.expand_path(@config['backup_directory'])
 			end
 
 			def run
 				@config['sites'].each do |site, site_entry|
 					now = Time.new
-					site_dir = "#{@options[:backup_dir]}/#{site}"
+					site_dir = "#{@args[:backup_dir]}/#{site}"
 					FileUtils.mkpath(site_dir)
 
 					if site_entry['directories']
@@ -29,7 +25,7 @@ module Xo
 							file = "#{site_dir}/#{site}-#{now.strftime('%Y%m%d')}.tar.gz"
 							File.delete(file) if File.exist?(file)
 
-							verbose_flag = @options[:verbose] ? 'v' : ''
+							verbose_flag = @args[:verbose] ? 'v' : ''
 							execute("rsync -a#{verbose_flag} --delete #{site_entry['ssh']}:#{directory} #{site_dir}/")
 							FileUtils.cd(site_dir)
 							execute("tar cz#{verbose_flag}f #{file} #{directory}")
@@ -52,22 +48,23 @@ module Xo
 			private
 
       def parse_options
+        @args = Xo::Args.instance.set :config_file => '~/.backup_sites.yml'
         OptionParser.new do |opts|
           opts.banner = "Usage: backup_sites [options]"
           opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
-            @options[:verbose] = v
+            @args[:verbose] = v
           end
         end.parse!
       end
 
       def get_config
-        config_file = File.expand_path @options[:config_file]
+        config_file = File.expand_path @args[:config_file]
         raise "No config file #{config_file}" unless File.exists? config_file
         config = YAML.load_file(config_file)
       end
       
 			def execute(command)
-				puts command if @options[:verbose]
+				puts command if @args[:verbose]
 				ok = system(command)
 				raise "[#{command}] returned [#{$?}]" unless ok
 			end

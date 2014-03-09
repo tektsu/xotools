@@ -1,18 +1,13 @@
 require 'fileutils'
 require 'optparse'
 require 'yaml'
+require 'xo/args'
 
 module Xo
   module Apps
     
     class Mnt
       def initialize
-        @options = {
-          :verbose => true,
-          :unmount => false,
-          :config_file => '~/.mnt.conf',
-        }
-
         parse_options
         @config = get_config
       end
@@ -25,9 +20,9 @@ module Xo
           end
           create_mountpoint(tag)
           command = build_command(tag)
-          puts command if @options[:verbose]
+          puts command if @args[:verbose]
           result = `#{command}`
-          puts result if @options[:verbose]
+          puts result if @args[:verbose]
           puts "Unable to mount #{tag}" unless $?.success?
         end
       end
@@ -35,19 +30,18 @@ module Xo
       private
 
       def parse_options
+        @args = Xo::Args.instance.set :verbose => true, :unmount => false, :config_file => '~/.mnt.conf'
         OptionParser.new do |opts|
           opts.banner = "Usage: mnt [options]"
-          opts.on("-u", "--unmount", "Unmount instead of mount") do |u|
-            @options[:unmount] = u
-          end
-          opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
-            @options[:verbose] = v
+          @args.add_arg_verbose(opts)
+          opts.on("-u", "--unmount", "Unmount instead of mount") do |v|
+            @args[:unmount] = v
           end
         end.parse!
       end
 
       def get_config
-        config_file = File.expand_path @options[:config_file]
+        config_file = File.expand_path @args[:config_file]
         raise "No config file #{config_file}" unless File.exists? config_file
 
         config = YAML.load_file(config_file)
@@ -68,7 +62,7 @@ module Xo
       end
 
       def build_command(tag)
-        if @options[:unmount]
+        if @args[:unmount]
           command = String.new(@config['unmountcommand'])
         else
           command = String.new(@config['mountcommand'])
